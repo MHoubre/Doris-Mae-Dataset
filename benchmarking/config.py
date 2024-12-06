@@ -28,7 +28,8 @@ def create_config(option, cuda, bs):
     elif option == "aspect":
         model_names = ["e5", "ts_aspire", "ot_aspire", "simcse", "specter", "specterv2", "sentbert", "rocketqa", "ance", "simlm", "spladev2", "colbertv2", "ernie","scibert","bm25", "tfidf", "scibertID"]
     elif option == "60_query":
-        model_names = ["e5", "ts_aspire", "ot_aspire", "simcse", "specter", "specterv2", "sentbert", "rocketqa", "ance", "simlm", "spladev2", "colbertv2", "ernie","scibert","bm25", "tfidf"]
+        #model_names = ["e5", "ts_aspire", "ot_aspire", "simcse", "specter", "specterv2", "sentbert", "rocketqa", "ance", "simlm", "spladev2", "colbertv2", "ernie","scibert","bm25", "tfidf"]
+        model_names = ["bm25"]
     elif option == "query_candidate_150":
         model_names = ["e5", "ts_aspire", "ot_aspire", "simcse", "specter", "specterv2", "sentbert", "rocketqa", "ance", "simlm", "spladev2", "colbertv2", "ernie","scibert","bm25", "tfidf"]
    

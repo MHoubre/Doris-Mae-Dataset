@@ -74,7 +74,7 @@ if __name__ == "__main__":
             random_result_dict = pickle.load(f)
         print_random_baseline(test_suites, random_result_dict)
     else:
-        model_name = "ernie"
+        model_name = "bm25"
         rank = rank_by_model(dataset, model_name, config)
         random_result_dict = get_random_baseline(gpt_result, rank, test_suites, trials = 100)
         print_random_baseline(test_suites, random_result_dict)
