@@ -5,12 +5,14 @@ import json
 from model_scoring import *
 import argparse
 import os
+from datasets import load_dataset
+from tqdm import tqdm
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        prog='benchmark evaluation for Doris Mae',
+        prog='Slight adaptation of information retrieval benchmark evaluation for Doris Mae',
         epilog='Created by Doris Mae'
     )
 
@@ -18,11 +20,21 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--cuda', default= "cpu", help= 'specify cuda ids to be used, format is 1,2,3, or cpu')
     parser.add_argument('-b', '--bs', default = 30, help ='user specified batch size based on their own gpu capability, default is 30, which is tested on GeForce RTX 2080 Titan')
     parser.add_argument('-bt', '--bootstrap', required=True, help ='bootstrap option')
+    parser.add_argument('-a','--augmentation_data', required=False, help='dataset of generated keyphrases to augment the candidate abstracts')
     
     args = parser.parse_args()
     option = args.option
     cuda = args.cuda.strip()
     bs = int(args.bs)
+
+    if args.augmentation_data != None:
+        augmentation_data = load_dataset("json", data_files = args.augmentation_data)
+        kps = {}
+        for element in augmentation_data["train"]:
+            kps[element["id"]] = ",".join(element["top_m"])
+        
+        kps_ids = list(kps.keys())
+        
     if args.bootstrap == "True":
         bootstrap = True
     else:
@@ -38,6 +50,13 @@ if __name__ == "__main__":
     print("loading dataset.... may take a while")
     with open("dataset/DORIS-MAE_dataset_v1.json", "r") as f:
         dataset = json.load(f)
+
+        if args.augmentation_data != None:
+
+            for document in tqdm(dataset["Corpus"],desc="Augmenting the abstract"):
+                if document["abstract_id"] in kps_ids:
+                    document["original_abstract"] = document["original_abstract"] + ". " + kps[document["abstract_id"]]
+
         print(f"raw dataset size {len(dataset['Query'])}")
             
     if "subquery" in option:
@@ -86,7 +105,7 @@ if __name__ == "__main__":
         query_mode = config["model_name_dict"][model_name]["query_mode"]
         abstract_mode = config["model_name_dict"][model_name]["abstract_mode"]
         aggregation = config["model_name_dict"][model_name]["aggregation"]
-        rank = rank_by_model(dataset, model_name, config)
+        #rank = rank_by_model(dataset, model_name, config)
         # For getting individual scores at each time
         if not bootstrap:
             for test_name in test_suites.keys():
